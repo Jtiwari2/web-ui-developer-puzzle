@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import { catchError, concatMap, exhaustMap, map } from 'rxjs/operators';
 import { ReadingListItem } from '@tmo/shared/models';
 import * as ReadingListActions from './reading-list.actions';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable()
 export class ReadingListEffects implements OnInitEffects {
@@ -54,9 +55,30 @@ export class ReadingListEffects implements OnInitEffects {
     )
   );
 
+  // Added snackbar to confirm book marked as a read 
+  updateBook$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ReadingListActions.markBookAsRead),
+      concatMap(( { item , showSnackBar}) => 
+        this.http.put(`/api/reading-list/${item.bookId}/finished`,item).pipe(
+          map(() => {
+            if(showSnackBar){
+              this.snackBar.open(`${item.title} Marked as read`, 'Ok', {duration:3000});
+            }
+            return ReadingListActions.confirmedMarkBookAsRead({ item });
+          }),
+
+          catchError((error) =>
+            of(ReadingListActions.failedMarkBookAsRead({ item }))
+          )
+        )
+      )
+    )
+  );
+
   ngrxOnInitEffects() {
     return ReadingListActions.init();
   }
 
-  constructor(private actions$: Actions, private http: HttpClient) {}
+  constructor(private actions$: Actions, private http: HttpClient, private snackBar: MatSnackBar) {}
 }
