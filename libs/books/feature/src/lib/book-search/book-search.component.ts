@@ -9,6 +9,7 @@ import {
 } from '@tmo/books/data-access';
 import { FormBuilder } from '@angular/forms';
 import { Book } from '@tmo/shared/models';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'tmo-book-search',
@@ -25,7 +26,14 @@ export class BookSearchComponent {
   constructor(
     private readonly store: Store,
     private readonly fb: FormBuilder
-  ) {}
+  ) {
+    // instant search: shows search results when user typing in search field
+    this.searchForm.valueChanges
+    .pipe(debounceTime(500))
+    .subscribe(x => {
+      x.term ? this.searchBooks() : this.store.dispatch(clearSearch())
+    });
+  }
 
   get searchTerm(): string {
     return this.searchForm.value.term;
@@ -41,10 +49,6 @@ export class BookSearchComponent {
   }
 
   searchBooks() {
-    if (this.searchForm.value.term) {
-      this.store.dispatch(searchBooks({ term: this.searchTerm }));
-    } else {
-      this.store.dispatch(clearSearch());
-    }
+    this.store.dispatch(searchBooks({ term: this.searchTerm }));
   }
 }
