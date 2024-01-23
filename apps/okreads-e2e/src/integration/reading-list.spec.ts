@@ -11,4 +11,13 @@ describe('When: I use the reading list feature', () => {
       'My Reading List'
     );
   });
+
+  it('Then: should mark the book as read', async () => {
+    cy.get('[data-testing="reading-list-mark-as-read"]').click();
+    cy.get('[data-testing="reading-list-finished"]').should(
+      'contain.text',
+      'Finished on'
+    );
+  });
+
 });

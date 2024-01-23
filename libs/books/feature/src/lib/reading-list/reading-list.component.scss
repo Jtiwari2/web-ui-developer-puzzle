@@ -10,14 +10,24 @@
 
 .reading-list-item {
   display: flex;
-  justify-content: center;
+  justify-content: top;
   margin-bottom: $spacing-xs;
   width: 100%;
-
+  border-bottom: dashed 1px $gray30;
   > * {
     display: flex;
     flex-direction: column;
     justify-content: center;
+  }
+
+  .finished {
+    color: $gray60;
+    font-size: x-small;
+    line-height: 1.5rem;
+    &mat-icon {
+      width: auto;
+      padding-right: .15rem;
+    }
   }
 }
 
@@ -25,6 +35,7 @@
   max-width: 36px;
   max-height: 36px;
   margin-right: $spacing-xxs;
+  line-height: 1rem;
 }
 
 .reading-list-item--details {
